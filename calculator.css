@@ -1,0 +1,106 @@
+.body{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    border: solid;
+}
+
+.calculator-body{
+    background-color: aquamarine;
+    border: black;
+    border-style: solid;
+    width: 25%;
+    height: 80vh; 
+    display: flex; 
+    flex-direction: column;
+    padding: 20px 0 20px 0;
+}
+
+.calculator-screen{
+align-self: center;
+border: black;
+border-style: double;
+width: 80%;
+flex: 1;
+text-align: right;
+
+}
+
+.keypad {
+flex: 4;
+display: flex;
+border: rgba(0, 0, 0, 0.486);
+border-style: ridge;
+width: 90%;
+align-self: center;
+margin-top: 10px;
+
+}
+
+.input-keys{
+  flex: 4;  
+  display: flex ;
+  flex-wrap: wrap ;
+  justify-content: space-around;
+}
+
+p{
+ width: 19%;
+ height: 50px;
+ background-color: chartreuse;
+ border: black;
+ margin: 5px;
+ border-style: ridge;
+ text-decoration: solid;
+ font-weight: bold;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ 
+}
+
+
+
+@media only screen and (max-width: 1200px) {
+  .p{
+    width: 25% ;
+  }
+  .calculator-body{
+  width: 40% ;
+
+  }
+  
+}
+@media only screen and (max-width: 773px) {
+  .p{
+    width: 25% ;
+  }
+  .calculator-body{
+  width: 60% ;
+
+  }
+  
+}
+@media only screen and (max-width: 526px) {
+  .p{
+    width: 25% ;
+  }
+  .calculator-body{
+  width: 80% ;
+
+  }
+  
+}
+@media only screen and (max-width: 403px) {
+  .p{
+    width: 25% ;
+  }
+  .calculator-body{
+  width: 100% ;
+
+  }
+  
+}
