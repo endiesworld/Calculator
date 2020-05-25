@@ -1,91 +1,71 @@
 // APP ARITHMETIC CONTROLLER
 const calcModel = (function(){
     return{
-        evaluate: function( firstValue) {
-            let answer = eval(firstValue) ;
-            return (answer);
-        },
-        squareRoot: function(values){
-            return Math.sqrt(values) ;
-        },
-        raiseToPower: function(value, power){
-            return Math.pow(value, power) ;
-        }
-
+        evaluate: value => eval(value),
+        squareRoot: values => Math.sqrt(values),
+        raiseToPower: (value, power) => Math.pow(value, power)
     }
 })() ;
 
 // UI CONTROLLER FOR APP
 const uiController = ( function() {
-const calcView = {
-    calcScreen : '.calculator-screen' ,
-    brackets : '.key-brackets' , 
-    backwardShift : '.key-shift-backward', 
-    forwardShift : '.key-shift-forward' , 
-    cancel : '.key-cancel' , 
-    delete : '.key-delete' ,
-    add : '.key-plus' ,
-    subtract : '.key-minus' ,
-    square : '.key-square' ,
-    multiply : '.key-multiply' ,
-    equals : '.key-equals' ,
-    negative : '.key-negative-integer' ,
-    squaroot : '.key-squaroot' ,
-    divide : '.key-division' ,
-    zero: '.key-zero',
-    numberOne : '.key-one' ,
-    numberTwo : '.key-two' ,
-    numberThree : '.key-three' ,
-    numberFour : '.key-four' ,
-    numberFive : '.key-five',
-    numberSix : '.key-six',
-    numberSeven : '.key-seven' ,
-    numberEight : '.key-eight',
-    numberNine : '.key-nine' ,
-    point : '.key-point'
-};
+    const calcView = {
+        calcScreen : '.calculator-screen' ,
+        brackets : '.key-brackets' , 
+        backwardShift : '.key-shift-backward', 
+        forwardShift : '.key-shift-forward' , 
+        cancel : '.key-cancel' , 
+        delete : '.key-delete' ,
+        add : '.key-plus' ,
+        subtract : '.key-minus' ,
+        square : '.key-square' ,
+        multiply : '.key-multiply' ,
+        equals : '.key-equals' ,
+        negative : '.key-negative-integer' ,
+        squaroot : '.key-squaroot' ,
+        divide : '.key-division' ,
+        zero: '.key-zero',
+        numberOne : '.key-one' ,
+        numberTwo : '.key-two' ,
+        numberThree : '.key-three' ,
+        numberFour : '.key-four' ,
+        numberFive : '.key-five',
+        numberSix : '.key-six',
+        numberSeven : '.key-seven' ,
+        numberEight : '.key-eight',
+        numberNine : '.key-nine' ,
+        point : '.key-point'
+    };
 
-let writeValue = function(newValue){
-    let screen = document.querySelector(calcView.calcScreen);
-    screen.value = newValue;
-};
+    let writeValue = newValue => { document.querySelector(calcView.calcScreen).value = newValue; };
 
-return {
-    getInputElement: function(){
-        return Object.values(calcView) ;
-    },
-
-    getExistingValue: function () {
-        let screen = document.querySelector(calcView.calcScreen);
-        return screen.value;
-    } ,
-
-    setNumber: function(number){
-        let newNumber = this.getExistingValue() + number ;
-        writeValue(newNumber) ;
-    },
-
-    setOperation: function(operation){
-        let newNumber = this.getExistingValue() + operation;
-        writeValue(newNumber);
-    },
-    setAnswer: function(answer){
-        let newNumber = this.getExistingValue() + answer ;
-        writeValue(newNumber);
-    }
-}
-}
-)() ;
+    return {
+        getInputElement: () =>  Object.values(calcView),
+        getExistingValue: () => document.querySelector(calcView.calcScreen).value,
+        setNumber: function(number){
+            writeValue(this.getExistingValue() + number ) ;
+        },
+        setOperation: function(operation){
+            writeValue(this.getExistingValue() + operation);
+        },
+        setAnswer: function(answer){
+            writeValue(this.getExistingValue() + answer);
+        }
+        }
+})() ;
 
 // GLOBAL APP CONTROLLER
 const controller = (function (calcUI, calcOperation) { 
-    let numberBuffer = "" ;
-    let answer = 0 ;
-    let dataEntered = [] ;
-    let specialData = [];
-    let memorySpecialOperation = "" ;
-    const specialOperationFlag = {
-        state: false 
+    const calcState = {
+         numberBuffer: "" ,
+         answer:  0 ,
+         dataEntered: [] ,
+         specialData: [] ,
+         specialOperation: {
+                            type: '',
+                            state: false
+         }
+    
     };
     
     let processOperationType = {
@@ -95,78 +75,90 @@ const controller = (function (calcUI, calcOperation) {
                     },
 
         operation: btnClicked =>{
-                        let operation = 'ordinaryOperation';
                         writeOperation(btnClicked);
-                        clickedOperation[operation](btnClicked);
+                        clickedOperation.ordinaryOperation(btnClicked);
                      },
         specialOperation: btnClicked =>{
-                             specialOperationFlag.state = !(specialOperationFlag.state);
-                             if (specialOperationFlag.state) {
-                            clickedOperation[btnClicked]();
-                            memorySpecialOperation = btnClicked;
-                             }
-                           else {
-                            clickedOperation[memorySpecialOperation]();
-                            }
-                            },
+                             calcState.specialOperation.state = !( calcState.specialOperation.state);
+                             //book a special operation in memory or Close the special operation in current memory
+                             ( calcState.specialOperation.state) ? clickedOperation[btnClicked]() : clickedOperation[calcState.specialOperation.type]();
+                        },
         answer: btnClicked=> {
-                  let processAnsFrom = getDataEntered;
                   writeNumber(btnClicked); 
-                  dataEntered.push(getNumberBuffer());
+                  calcState.dataEntered.push(getNumberBuffer());
                   initNumberBuffer();
-                  processAnswer(processAnsFrom);
+                  processAnswer(getDataEntered);
                   writeAnswer(getAnswer());
                   initDataEntered();
-                  dataEntered.push(getAnswer());
+                  calcState.dataEntered.push(getAnswer());
                   initAnswer();
                  }
     }
 
     let clickedOperation = {
-            ordinaryOperation : function(btnClicked){
-                                    if(specialOperationFlag.state){
-                                    specialData.push(getNumberBuffer())
-                                    specialData.push(btnClicked);
-                                    initNumberBuffer();
+            ordinaryOperation : btnClicked => {
+                                    if( calcState.specialOperation.state){
+                                        calcState.specialData.push(getNumberBuffer())
+                                        calcState.specialData.push(btnClicked);
+                                        initNumberBuffer();
                                     }
                                     else{
-                                    dataEntered.push(getNumberBuffer());
-                                    dataEntered.push(btnClicked);
-                                    initNumberBuffer();
+                                        calcState.dataEntered.push(getNumberBuffer());
+                                        calcState.dataEntered.push(btnClicked);
+                                        initNumberBuffer();
                                     }     
         },
     
-        '√' : function () {
-            let process = squareRootOperation ;
-            if(specialOperationFlag.state){
+        '√' : () => {
+            if( calcState.specialOperation.state){
                 writeOperation('√(');
+                calcState.specialOperation.type = '√';
             }
             else{
                 writeOperation(')');
-                commonspecialOperation(process);
+                commonspecialOperationType(squareRootOperation);
             }       
         },
 
-        'X²': function () {
-            let process = square ;
+        'X²':  () => {
+            //calcState.specialOperation.type = 'X²';
             writeOperation('^(2)');
-            commonspecialOperation(process) ;
-            specialOperationFlag.state = !(specialOperationFlag.state);
+            commonspecialOperationType(square) ;
+            calcState.specialOperation.state = !(calcState.specialOperation.state);
         }
 
     }
 
-    let commonspecialOperation = function (process){
-                                    let getNumberFrom = getSpecialData;
-                                    specialData.push(getNumberBuffer());
+    let commonspecialOperationType = function (process){
+                                    //let getNumberFrom = getSpecialData;
+                                    calcState.specialData.push(getNumberBuffer()); //pushes the last number entered for onward processing as a specialData
                                     initNumberBuffer();
-                                    processAnswer(getNumberFrom);
+                                    processAnswer(getSpecialData); //process the mathematical operation stored in the special data memory before pushing it to ordinaryDataMemory
                                     initSpecialDataEntered();
-                                    dataEntered.push(process(getAnswer()));
+                                    calcState.dataEntered.push(process(getAnswer()));
                                     initAnswer();
     }
 
-    let setEventListener = function(){
+    const square = values => calcOperation.raiseToPower(values, 2);       
+    const squareRootOperation = values => calcOperation.squareRoot(values) ;
+    const setNumberBuffer = number => { calcState.numberBuffer = calcState.numberBuffer + number ;}
+    const getSpecialData = () => calcState.specialData ;
+    const initSpecialDataEntered = () => { calcState.specialData = []; }
+    const getNumberBuffer = () => calcState.numberBuffer ;
+    const initNumberBuffer = () => { calcState.numberBuffer = "" ; }
+    const getDataEntered = () => calcState.dataEntered ;
+    const processAnswer = processAnsFrom => {
+            let dataInString = processAnsFrom().toString() ;
+            let dataInPureString = dataInString.replace(/,/g,'') ;
+            calcState.answer = calcOperation.evaluate(dataInPureString) ;
+    } ;
+    const getAnswer = () => calcState.answer ;
+    const initDataEntered = () => { calcState.dataEntered = [] ; }
+    const initAnswer = () => { calcState.answer = 0 ; }
+    const writeAnswer = () => { calcUI.setAnswer(calcState.answer) ; };
+    const writeNumber = number => { calcUI.setNumber(number) ; };
+    const writeOperation = operation => { calcUI.setOperation(operation); };
+    const setEventListener = () => {
         let domInputElements = calcUI.getInputElement() ;
         for (const element of domInputElements){
             document.querySelector(element).addEventListener('click', function(e){
@@ -178,66 +170,8 @@ const controller = (function (calcUI, calcOperation) {
         }
     };
     
-    function square(values){
-        return calcOperation.raiseToPower(values, 2);       
-    } 
-    function squareRootOperation(values){
-        return calcOperation.squareRoot(values) ;
-    }
-    let setNumberBuffer = function(number){
-        numberBuffer = numberBuffer + number ;
-    }
-    
-    let getSpecialData = function(){
-        return specialData ;
-    }
-    let initSpecialDataEntered = function () {
-        specialData = [];
-    }
-    let getNumberBuffer = function(){
-        return numberBuffer ;
-    }
-
-    let initNumberBuffer = function(){
-        numberBuffer = "" ;
-    }
-    
-    let getDataEntered = function(){
-        return dataEntered ;
-    }
-    let processAnswer = function(processAnsFrom) {
-        let dataInString = processAnsFrom().toString() ;
-        let dataInPureString = dataInString.replace(/,/g,'') ;
-        answer = calcOperation.evaluate(dataInPureString) ;
-    } ;
-
-    let getAnswer = function(){
-        return answer ;
-    };
-    let initDataEntered = function(){
-        dataEntered = [] ;
-    }
-
-    let initAnswer = function(){
-        answer = 0 ;
-    }
-
-    let writeAnswer = function(){
-        calcUI.setAnswer(answer) ; 
-    };
- 
-    let writeNumber = function(number){
-        calcUI.setNumber(number) ;
-    };
-
-    let writeOperation = function (operation) {
-        calcUI.setOperation(operation);
-    };
-
     return {
-        init: function () {
-             setEventListener() ;
-    } 
+        init: () => { setEventListener() ; } 
 }
 })(uiController, calcModel) ;
 
